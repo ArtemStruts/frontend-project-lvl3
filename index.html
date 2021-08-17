@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
       <title>Hexlet frontend project</title>
   </head>
-  <body class="min-vh-100">
+  <body class="d-flex flex-column">
     <main>
-      <section class="container">
+      <section class="container-fluid bg-dark p-5">
         <div class="row">
-          <div class="col-md-10 col-lg-8 mx-auto">
+          <div id="container" class="col-md-10 col-lg-8 mx-auto text-white">
             <h1 class="mb-0">RSS агрегатор</h1>
             <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
             <form class="form-inline">
               <div class="input-group mb-3">
-                <input class="form-control" id="url-input" autofocus="" required="" placeholder="Ссылка RSS" aria-label="Ссылка RSS" autocomplete="off">
+                <input type="url" class="form-control" id="url-input" autofocus="" required="" name="url" placeholder="Ссылка RSS" aria-label="Ссылка RSS" autocomplete="off">
                 <button type="submit" class="btn btn-primary h-100 btn-lg px-sm-5" aria-label="add">Добавить</button>
               </div>
             </form>
@@ -23,7 +23,7 @@
         </div>
       </section>
     </main>
-    <footer class="footer">
+    <footer>
       <div class="position-absolute bottom-0 start-50 translate-middle-x">
         created by AS
       </div>
