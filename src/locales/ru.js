@@ -4,6 +4,8 @@ export default {
       emptyField: 'Поле обязательно для заполнения.',
       invalidUrl: 'Ссылка должна быть валидным URL',
       feedAlreadyExist: 'RSS уже существует',
+      networkError: 'Ошибка сети',
+      parserError: 'Ошибка парсинга',
     },
   },
 };
