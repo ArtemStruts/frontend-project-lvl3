@@ -24,15 +24,44 @@ const parseRSS = (data) => {
     const postLinkElement = postEl.querySelector('link');
     const postTitle = postTitleElement.textContent.replace('<![CDATA[', '').replace(']]>', '');
     const postLink = postLinkElement.nextSibling.data;
+    const dataElement = postEl.querySelector('pubDate');
+    const postTime = dataElement.textContent;
     return {
       title: postTitle,
       link: postLink,
       feedId,
       id: uniqueId(),
+      pubData: postTime,
     };
   });
   const feed = { title: feedTitle, description: feedDesc, id: feedId };
   return { feed, posts: postsEl };
+};
+
+const updatePosts = () => {
+  const delayInSeconds = 5;
+  feeds.feedList.forEach((feed) => {
+    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=second&interval=5')}`)
+      .then((response) => {
+        const content = response.data.contents;
+        const data = parseRSS(content);
+        const newPosts = data.posts;
+        const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
+        if (diffPosts.length > 0) {
+          const diffPostsClone = [];
+          diffPosts.forEach((diffPost) => {
+            const diffPostClone = { ...diffPost, feedId: feed.id };
+            diffPostsClone.push(diffPostClone);
+          });
+          posts.postList.push(diffPostsClone);
+          state.lastUpdated = Date.now();
+        }
+      })
+      .catch(() => {
+        state.error = i18next.t('errors.networkError');
+      });
+  });
+  setTimeout(updatePosts, delayInSeconds * 1000);
 };
 
 const app = () => {
@@ -73,13 +102,17 @@ const app = () => {
       const formData = new FormData(e.target);
       const value = formData.get('url');
       validator(value);
-      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed')}`)
+      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=second&interval=5')}`)
         .then((response) => {
           if (state.status === 'valid') {
             const content = response.data.contents;
             const data = parseRSS(content);
             feeds.feedList.push(data.feed);
             posts.postList.push(data.posts);
+            state.lastUpdated = Date.now();
+          }
+          if (feeds.feedList.length > 0) {
+            updatePosts();
           }
         })
         .catch(() => {

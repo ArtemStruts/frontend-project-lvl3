@@ -87,6 +87,7 @@ const renderPosts = (tempPostsList) => {
 
 const state = onChange({
   status: 'invalid',
+  lastUpdated: 0,
   feeds: [],
   error: '',
 }, (path, value, prevValue) => {
