@@ -78,11 +78,27 @@ const renderPosts = (tempPostsList) => {
     itemLinkPost.dataset.id = post.id;
     itemLinkPost.setAttribute('href', post.link);
     itemLinkPost.textContent = post.title;
-    listGroupItemPosts.append(itemLinkPost);
+    const buttonPost = document.createElement('button');
+    buttonPost.classList.add('btn', 'btn-outline-primary');
+    buttonPost.dataset.id = post.id;
+    buttonPost.dataset.bsToggle = 'modal';
+    buttonPost.dataset.bsTarget = '#modal';
+    buttonPost.textContent = 'Просмотр';
+    listGroupItemPosts.append(itemLinkPost, buttonPost);
     listGroupPosts.append(listGroupItemPosts);
   });
   cardPosts.append(cardBodyPosts, listGroupPosts);
   elements.postsContainer.append(cardPosts);
+};
+
+const renderReadedPosts = (tempReadedPostsList) => {
+  const readedPostsList = tempReadedPostsList.flat();
+  readedPostsList.forEach((readedPost) => {
+    const readedPostElement = elements.postsContainer.querySelector(`[data-id='${readedPost.id}']`);
+    console.log(readedPostElement);
+    readedPostElement.classList.remove('fw-bold');
+    readedPostElement.classList.add('fw-normal');
+  });
 };
 
 const state = onChange({
@@ -104,8 +120,10 @@ const feeds = onChange({
 
 const posts = onChange({
   postList: [],
+  readedPostList: [],
 }, () => {
   renderPosts(posts.postList);
+  renderReadedPosts(posts.readedPostList);
 });
 
 export { state, feeds, posts };

@@ -22,12 +22,15 @@ const parseRSS = (data) => {
   const postsEl = Array.from(postElements).map((postEl) => {
     const postTitleElement = postEl.querySelector('title');
     const postLinkElement = postEl.querySelector('link');
+    const postDescElement = postEl.querySelector('description');
     const postTitle = postTitleElement.textContent.replace('<![CDATA[', '').replace(']]>', '');
     const postLink = postLinkElement.nextSibling.data;
+    const postDesc = postDescElement.innerHTML.replace('<!--[CDATA[', '').replace(']]-->', '');
     const dataElement = postEl.querySelector('pubDate');
     const postTime = dataElement.textContent;
     return {
       title: postTitle,
+      description: postDesc,
       link: postLink,
       feedId,
       id: uniqueId(),
@@ -118,6 +121,21 @@ const app = () => {
         .catch(() => {
           state.error = i18next.t('errors.networkError');
         });
+    });
+
+    const modal = document.querySelector('#modal');
+    const modalTitle = document.querySelector('.modal-title');
+    const modalBody = document.querySelector('.modal-body');
+    modal.addEventListener('show.bs.modal', (e) => {
+      modalBody.innerHTML = '';
+      const button = e.relatedTarget;
+      const postId = button.dataset.id;
+      const readedPost = posts.postList.flat().filter((post) => post.id === postId);
+      posts.readedPostList.push(readedPost);
+      modalTitle.textContent = readedPost[0].title;
+      const p = document.createElement('p');
+      p.textContent = readedPost[0].description;
+      modalBody.append(p);
     });
   });
 };
