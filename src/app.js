@@ -15,8 +15,10 @@ const parseRSS = (data) => {
   }
   const feedTitleElement = dom.querySelector('title');
   const feedDescElement = dom.querySelector('description');
+  const feedLinkElement = dom.querySelector('link');
   const feedTitle = feedTitleElement.textContent.replace('<![CDATA[', '').replace(']]>', '');
   const feedDesc = feedDescElement.innerHTML.replace('<!--[CDATA[', '').replace(']]-->', '');
+  const feedLink = feedLinkElement.nextSibling.data;
   const feedId = uniqueId();
   const postElements = dom.querySelectorAll('item');
   const postsEl = Array.from(postElements).map((postEl) => {
@@ -37,7 +39,12 @@ const parseRSS = (data) => {
       pubData: postTime,
     };
   });
-  const feed = { title: feedTitle, description: feedDesc, id: feedId };
+  const feed = {
+    title: feedTitle,
+    description: feedDesc,
+    url: feedLink,
+    id: feedId,
+  };
   return { feed, posts: postsEl };
 };
 
@@ -113,12 +120,15 @@ const app = () => {
             feeds.feedList.push(data.feed);
             posts.postList.push(data.posts);
             state.lastUpdated = Date.now();
+            state.status = 'loaded';
+            state.error = i18next.t('feedback.RSSLoaded');
           }
           if (feeds.feedList.length > 0) {
             updatePosts();
           }
         })
         .catch(() => {
+          state.status = 'invalid';
           state.error = i18next.t('errors.networkError');
         });
     });

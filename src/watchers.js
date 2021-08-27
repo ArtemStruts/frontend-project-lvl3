@@ -9,23 +9,40 @@ const elements = {
   postsContainer: document.querySelector('#posts'),
 };
 
-const renderErrors = (val, preVal) => {
-  if (val === '' && preVal !== '') {
-    elements.input.classList.remove('is-invalid');
-    elements.container.removeChild(elements.container.lastChild);
+const renderErrors = (val, preVal, state) => {
+  const errorFeedbackElement = document.querySelector('.feedback');
+  if (errorFeedbackElement) {
+    if (state.status === 'loaded') {
+      elements.input.classList.remove('is-invalid');
+      errorFeedbackElement.classList.remove('text-danger');
+      errorFeedbackElement.classList.add('text-success');
+      errorFeedbackElement.textContent = val;
+      elements.form.reset();
+      elements.form.focus();
+    } else {
+      const messageElement = document.querySelector('.text-danger');
+      if (messageElement) {
+        errorFeedbackElement.textContent = val;
+      } else {
+        elements.input.classList.add('is-invalid');
+        errorFeedbackElement.classList.remove('text-success');
+        errorFeedbackElement.classList.add('text-danger');
+        errorFeedbackElement.textContent = val;
+      }
+    }
+  } else if (state.status === 'loaded') {
+    const feedback = document.createElement('p');
+    feedback.classList.add('feedback', 'text-success');
+    feedback.textContent = val;
+    elements.container.append(feedback);
     elements.form.reset();
     elements.form.focus();
-  }
-  if (val !== '' && preVal === '') {
+  } else {
     elements.input.classList.add('is-invalid');
-    const errorFeedback = document.createElement('div');
-    errorFeedback.classList.add('text-danger');
+    const errorFeedback = document.createElement('p');
+    errorFeedback.classList.add('feedback', 'text-danger');
     errorFeedback.textContent = val;
     elements.container.append(errorFeedback);
-  }
-  if (val !== '' && preVal !== '') {
-    const feedback = document.querySelector('.text-danger');
-    feedback.textContent = val;
   }
 };
 
@@ -95,7 +112,6 @@ const renderReadedPosts = (tempReadedPostsList) => {
   const readedPostsList = tempReadedPostsList.flat();
   readedPostsList.forEach((readedPost) => {
     const readedPostElement = elements.postsContainer.querySelector(`[data-id='${readedPost.id}']`);
-    console.log(readedPostElement);
     readedPostElement.classList.remove('fw-bold');
     readedPostElement.classList.add('fw-normal');
   });
@@ -108,7 +124,7 @@ const state = onChange({
   error: '',
 }, (path, value, prevValue) => {
   if (path === 'error') {
-    renderErrors(value, prevValue);
+    renderErrors(value, prevValue, state);
   }
 });
 

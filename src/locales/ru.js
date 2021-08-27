@@ -1,11 +1,14 @@
 export default {
   translation: {
+    feedback: {
+      RSSLoaded: 'RSS успешно загружен',
+    },
     errors: {
-      emptyField: 'Поле обязательно для заполнения.',
+      emptyField: 'Не должно быть пустым',
       invalidUrl: 'Ссылка должна быть валидным URL',
       feedAlreadyExist: 'RSS уже существует',
       networkError: 'Ошибка сети',
-      parserError: 'Ошибка парсинга',
+      parserError: 'Ресурс не содержит валидный RSS',
     },
   },
 };
