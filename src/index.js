@@ -1,4 +1,3 @@
-import app from './app.js';
+import app from './init.js';
 
 app();
-export default app;
