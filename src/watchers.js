@@ -1,6 +1,6 @@
 import onChange from 'on-change';
 
-const elements = {
+const elementsList = {
   container: document.querySelector('#container'),
   form: document.querySelector('.form-inline'),
   input: document.querySelector('#url-input'),
@@ -9,7 +9,7 @@ const elements = {
   postsContainer: document.querySelector('#posts'),
 };
 
-const renderErrors = (val, state) => {
+const renderErrors = (val, state, elements) => {
   const errorFeedbackElement = document.querySelector('.feedback');
   if (errorFeedbackElement) {
     if (state.status === 'loaded') {
@@ -46,8 +46,9 @@ const renderErrors = (val, state) => {
   }
 };
 
-const renderFeeds = (feedsList) => {
-  elements.feedsContainer.innerHTML = '';
+const renderFeeds = (feedsList, elements) => {
+  const { feedsContainer } = elements;
+  feedsContainer.innerHTML = '';
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card');
   const cardBodyFeeds = document.createElement('div');
@@ -71,12 +72,13 @@ const renderFeeds = (feedsList) => {
     listGroupFeeds.append(listGroupItemFeeds);
   });
   cardFeeds.append(cardBodyFeeds, listGroupFeeds);
-  elements.feedsContainer.append(cardFeeds);
+  feedsContainer.append(cardFeeds);
 };
 
-const renderPosts = (tempPostsList) => {
+const renderPosts = (tempPostsList, elements) => {
   const postsList = tempPostsList.flat();
-  elements.postsContainer.innerHTML = '';
+  const { postsContainer } = elements;
+  postsContainer.innerHTML = '';
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card');
   const cardBodyPosts = document.createElement('div');
@@ -105,10 +107,10 @@ const renderPosts = (tempPostsList) => {
     listGroupPosts.append(listGroupItemPosts);
   });
   cardPosts.append(cardBodyPosts, listGroupPosts);
-  elements.postsContainer.append(cardPosts);
+  postsContainer.append(cardPosts);
 };
 
-const renderReadedPosts = (tempReadedPostsList) => {
+const renderReadedPosts = (tempReadedPostsList, elements) => {
   const readedPostsList = tempReadedPostsList.flat();
   readedPostsList.forEach((readedPost) => {
     const readedPostElement = elements.postsContainer.querySelector(`[data-id='${readedPost.id}']`);
@@ -124,22 +126,27 @@ const state = onChange({
   error: '',
 }, (path, value) => {
   if (path === 'error') {
-    renderErrors(value, state);
+    renderErrors(value, state, elementsList);
   }
 });
 
 const feeds = onChange({
   feedList: [],
 }, () => {
-  renderFeeds(feeds.feedList);
+  renderFeeds(feeds.feedList, elementsList);
 });
 
 const posts = onChange({
   postList: [],
   readedPostList: [],
 }, () => {
-  renderPosts(posts.postList);
-  renderReadedPosts(posts.readedPostList);
+  renderPosts(posts.postList, elementsList);
+  renderReadedPosts(posts.readedPostList, elementsList);
 });
 
-export { state, feeds, posts };
+export {
+  state,
+  feeds,
+  posts,
+  elementsList,
+};
