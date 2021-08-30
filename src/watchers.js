@@ -2,8 +2,8 @@ import onChange from 'on-change';
 
 const elements = {
   container: document.querySelector('#container'),
-  form: document.querySelector('form'),
-  input: document.querySelector('input'),
+  form: document.querySelector('.form-inline'),
+  input: document.querySelector('#url-input'),
   button: document.querySelector('button'),
   feedsContainer: document.querySelector('#feeds'),
   postsContainer: document.querySelector('#posts'),
