@@ -110,7 +110,7 @@ const app = () => {
         });
     };
 
-    const form = document.querySelector('.input-group');
+    const form = document.querySelector('.form-inline');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
