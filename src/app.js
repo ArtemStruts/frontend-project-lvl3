@@ -7,7 +7,6 @@ import {
   state,
   feeds,
   posts,
-  elementsList,
 } from './watchers.js';
 import resources from './locales/index.js';
 
@@ -111,7 +110,7 @@ const app = () => {
         });
     };
 
-    const { form } = elementsList;
+    const form = document.querySelector('.input-group');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
