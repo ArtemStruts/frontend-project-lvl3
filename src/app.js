@@ -52,7 +52,7 @@ const parseRSS = (data) => {
   return { feed, posts: postsEl };
 };
 
-const updatePosts = () => {
+const updatePosts = (i18nextInstance) => {
   const delayInSeconds = 5;
   feeds.feedList.forEach((feed) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
@@ -72,7 +72,7 @@ const updatePosts = () => {
         }
       })
       .catch(() => {
-        state.error = i18next.t('errors.networkError');
+        state.error = i18nextInstance.t('errors.networkError');
       });
   });
   setTimeout(updatePosts, delayInSeconds * 1000);
@@ -80,26 +80,26 @@ const updatePosts = () => {
 
 const app = () => {
   const defaultLanguage = 'ru';
-  i18next.init({
+  const i18nextInstance = i18next.createInstance();
+  i18nextInstance.init({
     lng: defaultLanguage,
     debug: false,
     resources,
   }).then(() => {
     setLocale({
       string: {
-        required: i18next.t('errors.emptyField'),
-        url: i18next.t('errors.invalidUrl'),
+        required: i18nextInstance.t('errors.emptyField'),
+        url: i18nextInstance.t('errors.invalidUrl'),
       },
     });
-  });
-  const schema = yup.string().trim().required().url();
+    const schema = yup.string().trim().required().url();
     const validator = (field) => {
       schema
         .validate(field)
         .then((valid) => {
           if (state.feeds.includes(valid)) {
             state.status = 'invalid';
-            state.error = i18next.t('errors.feedAlreadyExist');
+            state.error = i18nextInstance.t('errors.feedAlreadyExist');
           } else {
             state.status = 'valid';
             state.error = '';
@@ -111,7 +111,7 @@ const app = () => {
         });
     };
 
-  const form = document.querySelector('.form-inline');
+    const form = document.querySelector('.form-inline');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -127,18 +127,18 @@ const app = () => {
             posts.postList.push(data.posts);
             state.lastUpdated = Date.now();
             state.status = 'loaded';
-            state.error = i18next.t('feedback.RSSLoaded');
+            state.error = i18nextInstance.t('feedback.RSSLoaded');
           }
           if (feeds.feedList.length > 1) {
-            updatePosts();
+            updatePosts(i18nextInstance);
           }
         })
         .catch(() => {
           state.status = 'invalid';
-          state.error = i18next.t('errors.networkError');
+          state.error = i18nextInstance.t('errors.networkError');
         });
     });
-    
+
     const modal = document.querySelector('#modal');
     const modalTitle = document.querySelector('.modal-title');
     const modalBody = document.querySelector('.modal-body');
@@ -153,6 +153,7 @@ const app = () => {
       p.textContent = readedPost[0].description;
       modalBody.append(p);
     });
+  });
 };
 
 export default app;
