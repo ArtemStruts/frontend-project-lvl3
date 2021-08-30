@@ -91,7 +91,8 @@ const app = () => {
         url: i18next.t('errors.invalidUrl'),
       },
     });
-    const schema = yup.string().trim().required().url();
+  });
+  const schema = yup.string().trim().required().url();
     const validator = (field) => {
       schema
         .validate(field)
@@ -110,7 +111,7 @@ const app = () => {
         });
     };
 
-    const form = document.querySelector('.form-inline');
+  const form = document.querySelector('.form-inline');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -137,7 +138,7 @@ const app = () => {
           state.error = i18next.t('errors.networkError');
         });
     });
-
+    
     const modal = document.querySelector('#modal');
     const modalTitle = document.querySelector('.modal-title');
     const modalBody = document.querySelector('.modal-body');
@@ -152,7 +153,6 @@ const app = () => {
       p.textContent = readedPost[0].description;
       modalBody.append(p);
     });
-  });
 };
 
 export default app;
