@@ -73,6 +73,7 @@ const updatePosts = () => {
   });
   setTimeout(updatePosts, delayInSeconds * 1000);
 };
+const form = document.querySelector('form');
 
 const app = () => {
   const defaultLanguage = 'ru';
@@ -106,7 +107,6 @@ const app = () => {
         });
     };
 
-    const form = document.querySelector('form');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -124,7 +124,7 @@ const app = () => {
             state.status = 'loaded';
             state.error = i18next.t('feedback.RSSLoaded');
           }
-          if (feeds.feedList.length > 0) {
+          if (feeds.feedList.length > 1) {
             updatePosts();
           }
         })
