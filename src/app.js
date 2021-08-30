@@ -51,7 +51,7 @@ const parseRSS = (data) => {
 const updatePosts = () => {
   const delayInSeconds = 5;
   feeds.feedList.forEach((feed) => {
-    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=second&interval=5')}`)
+    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
         const content = response.data.contents;
         const data = parseRSS(content);
@@ -75,8 +75,9 @@ const updatePosts = () => {
 };
 
 const app = () => {
+  const defaultLanguage = 'ru';
   i18next.init({
-    lng: 'ru',
+    lng: defaultLanguage,
     debug: false,
     resources,
   }).then(() => {
@@ -91,12 +92,11 @@ const app = () => {
       schema
         .validate(field)
         .then((valid) => {
-          if (state.feeds.includes(field)) {
+          if (state.feeds.includes(valid)) {
             state.status = 'invalid';
             state.error = i18next.t('errors.feedAlreadyExist');
           } else {
             state.status = 'valid';
-            state.feeds.push(valid);
             state.error = '';
           }
         })
@@ -112,11 +112,12 @@ const app = () => {
       const formData = new FormData(e.target);
       const value = formData.get('url');
       validator(value);
-      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=second&interval=5')}`)
+      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
           if (state.status === 'valid') {
             const content = response.data.contents;
             const data = parseRSS(content);
+            state.feeds.push(value);
             feeds.feedList.push(data.feed);
             posts.postList.push(data.posts);
             state.lastUpdated = Date.now();

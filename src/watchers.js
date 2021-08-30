@@ -9,7 +9,7 @@ const elements = {
   postsContainer: document.querySelector('#posts'),
 };
 
-const renderErrors = (val, preVal, state) => {
+const renderErrors = (val, state) => {
   const errorFeedbackElement = document.querySelector('.feedback');
   if (errorFeedbackElement) {
     if (state.status === 'loaded') {
@@ -122,9 +122,9 @@ const state = onChange({
   lastUpdated: 0,
   feeds: [],
   error: '',
-}, (path, value, prevValue) => {
+}, (path, value) => {
   if (path === 'error') {
-    renderErrors(value, prevValue, state);
+    renderErrors(value, state);
   }
 });
 
