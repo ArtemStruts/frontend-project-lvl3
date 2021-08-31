@@ -6,13 +6,13 @@ import uniqueId from 'lodash/uniqueId.js';
 import watcher from './watchers.js';
 import resources from './locales/index.js';
 
-const parseRSS = (data) => {
+const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
-  // const parseError = dom.getElementsByTagName('parsererror');
-  // if (parseError.length !== 0) {
-  //  state.error = i18next.t('errors.parserError');
-  // }
+  const parseError = dom.getElementsByTagName('parsererror');
+  if (parseError) {
+    throw new Error(i18nextInstance.t('errors.parserError'));
+  }
   const feedTitleElement = dom.querySelector('title');
   const feedDescElement = dom.querySelector('description');
   const feedLinkElement = dom.querySelector('link');
@@ -55,7 +55,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
         const content = response.data.contents;
-        const data = parseRSS(content);
+        const data = parseRSS(content, i18nextInstance);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
@@ -129,7 +129,7 @@ const app = () => {
         .then((response) => {
           if (watchedState.status === 'valid') {
             const content = response.data.contents;
-            const data = parseRSS(content);
+            const data = parseRSS(content, i18nextInstance);
             watchedState.feeds.push(value);
             watchedState.feedsList.push(data.feed);
             watchedState.postsList.push(data.posts);
@@ -141,9 +141,13 @@ const app = () => {
             updatePosts(watchedState, i18nextInstance);
           }
         })
-        .catch(() => {
+        .catch((error) => {
           watchedState.status = 'invalid';
-          watchedState.error = i18nextInstance.t('errors.networkError');
+          if (error.message === 'Network Error') {
+            watchedState.error = i18nextInstance.t('errors.networkError');
+          } else {
+            watchedState.error = error.message;
+          }
         });
     });
 
