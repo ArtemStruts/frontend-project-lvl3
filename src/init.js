@@ -3,20 +3,16 @@ import { setLocale } from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import uniqueId from 'lodash/uniqueId.js';
-import {
-  state,
-  feeds,
-  posts,
-} from './watchers.js';
+import watcher from './watchers.js';
 import resources from './locales/index.js';
 
 const parseRSS = (data) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
-  const parseError = dom.getElementsByTagName('parsererror');
-  if (parseError.length !== 0) {
-    state.error = i18next.t('errors.parserError');
-  }
+  // const parseError = dom.getElementsByTagName('parsererror');
+  // if (parseError.length !== 0) {
+  //  state.error = i18next.t('errors.parserError');
+  // }
   const feedTitleElement = dom.querySelector('title');
   const feedDescElement = dom.querySelector('description');
   const feedLinkElement = dom.querySelector('link');
@@ -52,9 +48,10 @@ const parseRSS = (data) => {
   return { feed, posts: postsEl };
 };
 
-const updatePosts = (i18nextInstance) => {
+const updatePosts = (statePosts, i18nextInstance) => {
+  const state = statePosts;
   const delayInSeconds = 5;
-  feeds.feedList.forEach((feed) => {
+  state.feedsList.forEach((feed) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
         const content = response.data.contents;
@@ -67,7 +64,7 @@ const updatePosts = (i18nextInstance) => {
             const diffPostClone = { ...diffPost, feedId: feed.id };
             diffPostsClone.push(diffPostClone);
           });
-          posts.postList.push(diffPostsClone);
+          state.postsList.push(diffPostsClone);
           state.lastUpdated = Date.now();
         }
       })
@@ -79,6 +76,16 @@ const updatePosts = (i18nextInstance) => {
 };
 
 const app = () => {
+  const state = {
+    status: 'invalid',
+    lastUpdated: 0,
+    feeds: [],
+    error: '',
+    feedsList: [],
+    postsList: [],
+    readedPostsList: [],
+  };
+
   const defaultLanguage = 'ru';
   const i18nextInstance = i18next.createInstance();
   i18nextInstance.init({
@@ -92,22 +99,23 @@ const app = () => {
         url: i18nextInstance.t('errors.invalidUrl'),
       },
     });
+    const watchedState = watcher(state);
     const schema = yup.string().trim().required().url();
     const validator = (field) => {
       schema
         .validate(field)
         .then((valid) => {
-          if (state.feeds.includes(valid)) {
-            state.status = 'invalid';
-            state.error = i18nextInstance.t('errors.feedAlreadyExist');
+          if (watchedState.feeds.includes(valid)) {
+            watchedState.status = 'invalid';
+            watchedState.error = i18nextInstance.t('errors.feedAlreadyExist');
           } else {
-            state.status = 'valid';
-            state.error = '';
+            watchedState.status = 'valid';
+            watchedState.error = '';
           }
         })
         .catch((e) => {
-          state.status = 'invalid';
-          state.error = e.message;
+          watchedState.status = 'invalid';
+          watchedState.error = e.message;
         });
     };
 
@@ -119,23 +127,23 @@ const app = () => {
       validator(value);
       axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
-          if (state.status === 'valid') {
+          if (watchedState.status === 'valid') {
             const content = response.data.contents;
             const data = parseRSS(content);
-            state.feeds.push(value);
-            feeds.feedList.push(data.feed);
-            posts.postList.push(data.posts);
-            state.lastUpdated = Date.now();
-            state.status = 'loaded';
-            state.error = i18nextInstance.t('feedback.RSSLoaded');
+            watchedState.feeds.push(value);
+            watchedState.feedsList.push(data.feed);
+            watchedState.postsList.push(data.posts);
+            watchedState.lastUpdated = Date.now();
+            watchedState.status = 'loaded';
+            watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
           }
-          if (feeds.feedList.length > 1) {
-            updatePosts(i18nextInstance);
+          if (watchedState.feedsList.length > 1) {
+            updatePosts(watchedState, i18nextInstance);
           }
         })
         .catch(() => {
-          state.status = 'invalid';
-          state.error = i18nextInstance.t('errors.networkError');
+          watchedState.status = 'invalid';
+          watchedState.error = i18nextInstance.t('errors.networkError');
         });
     });
 
@@ -146,8 +154,8 @@ const app = () => {
       modalBody.innerHTML = '';
       const button = e.relatedTarget;
       const postId = button.dataset.id;
-      const readedPost = posts.postList.flat().filter((post) => post.id === postId);
-      posts.readedPostList.push(readedPost);
+      const readedPost = watchedState.postsList.flat().filter((post) => post.id === postId);
+      watchedState.readedPostsList.push(readedPost);
       modalTitle.textContent = readedPost[0].title;
       const p = document.createElement('p');
       p.textContent = readedPost[0].description;
