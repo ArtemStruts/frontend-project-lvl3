@@ -10,6 +10,7 @@ const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
   const parseError = dom.getElementsByTagName('parsererror');
+  console.log(dom);
   console.log(parseError);
   if (parseError.length > 0) {
     throw new Error(i18nextInstance.t('errors.parserError'));
@@ -126,7 +127,7 @@ const app = () => {
       const formData = new FormData(e.target);
       const value = formData.get('url');
       validator(value);
-      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
+      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=minute&interval=7')}`)
         .then((response) => {
           if (watchedState.status === 'valid') {
             const content = response.data.contents;
