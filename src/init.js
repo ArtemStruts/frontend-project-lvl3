@@ -9,11 +9,11 @@ import resources from './locales/index.js';
 const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
-  const parseError = dom.getElementsByTagName('pre');
+  const parseError = dom.getElementsByTagName('parsererror');
   console.log('content', data);
   console.log(dom.body.innerHTML);
   console.log(parseError);
-  if (parseError.length > 0) {
+  if (parseError.length > 0 || dom.body.innerHTML === '') {
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
   const feedTitleElement = dom.querySelector('title');
