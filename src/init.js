@@ -144,12 +144,12 @@ const app = () => {
             updatePosts(watchedState, i18nextInstance);
           }
         })
-        .catch((error) => {
+        .catch(() => {
           watchedState.status = 'invalid';
           //  if (error.message === 'Network Error') {
           //   watchedState.error = i18nextInstance.t('errors.networkError');
           //  } else {
-          watchedState.error = error.message;
+          watchedState.error = i18nextInstance.t('errors.parserError');
           // }
         });
     });
