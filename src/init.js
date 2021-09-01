@@ -13,7 +13,7 @@ const parseRSS = (data, i18nextInstance) => {
   console.log('content', data);
   console.log(dom.body.innerHTML);
   console.log(parseError);
-  if (parseError.length > 0 || dom.body.innerHTML === '') {
+  if (parseError.length > 0 || dom.body.innerHTML.length < 5) {
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
   const feedTitleElement = dom.querySelector('title');
