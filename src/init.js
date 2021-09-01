@@ -9,11 +9,11 @@ import resources from './locales/index.js';
 const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
-  const parseError = dom.getElementsByTagName('parsererror');
+  const parseError = dom.getElementsByTagName('meta');
   console.log('content', data);
   console.log(dom.body.innerHTML);
   console.log(parseError);
-  if (parseError.length > 0 || dom.body.innerHTML.length < 5) {
+  if (parseError.length > 0) {
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
   const feedTitleElement = dom.querySelector('title');
@@ -144,13 +144,13 @@ const app = () => {
             updatePosts(watchedState, i18nextInstance);
           }
         })
-        .catch(() => {
+        .catch((error) => {
           watchedState.status = 'invalid';
           //  if (error.message === 'Network Error') {
-          //   watchedState.error = i18nextInstance.t('errors.networkError');
-          //  } else {
-          watchedState.error = i18nextInstance.t('errors.parserError');
-          // }
+          //  watchedState.error = i18nextInstance.t('errors.networkError');
+          //   } else {
+          watchedState.error = error.message;
+          //  }
         });
     });
 
