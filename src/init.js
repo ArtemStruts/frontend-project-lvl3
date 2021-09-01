@@ -127,7 +127,7 @@ const app = () => {
       const formData = new FormData(e.target);
       const value = formData.get('url');
       validator(value);
-      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent('http://lorem-rss.herokuapp.com/feed?unit=minute&interval=7')}`)
+      axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
           if (watchedState.status === 'valid') {
             const content = response.data.contents;
