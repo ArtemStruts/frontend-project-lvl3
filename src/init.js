@@ -146,11 +146,11 @@ const app = () => {
         })
         .catch((error) => {
           watchedState.status = 'invalid';
-          //  if (error.message === 'Network Error') {
-          //  watchedState.error = i18nextInstance.t('errors.networkError');
-          //   } else {
-          watchedState.error = error.message;
-          //  }
+          if (error.message === 'Network Error') {
+            watchedState.error = i18nextInstance.t('errors.networkError');
+          } else {
+            watchedState.error = error.message;
+          }
         });
     });
 
