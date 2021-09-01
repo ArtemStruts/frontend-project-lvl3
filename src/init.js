@@ -9,8 +9,8 @@ import resources from './locales/index.js';
 const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
-  const parseError = dom.getElementsByTagName('parsererror');
-  console.log(dom);
+  const parseError = dom.getElementsByTagName('pre');
+  console.log(dom.body.innerHTML);
   console.log(parseError);
   if (parseError.length > 0) {
     throw new Error(i18nextInstance.t('errors.parserError'));
@@ -57,6 +57,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
         const content = response.data.contents;
+        console.log('content', content);
         const data = parseRSS(content, i18nextInstance);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
