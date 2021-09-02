@@ -161,9 +161,9 @@ const app = () => {
       const readedPost = watchedState.postsList.flat().filter((post) => post.id === postId);
       watchedState.readedPostsList.push(readedPost);
       modalTitle.textContent = readedPost[0].title;
-      const p = document.createElement('p');
-      p.textContent = readedPost[0].description;
-      modalBody.append(p);
+      // const p = document.createElement('p');
+      modalBody.textContent = readedPost[0].description;
+      // modalBody.append(p);
     });
   });
 };
