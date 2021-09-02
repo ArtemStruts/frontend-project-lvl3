@@ -51,20 +51,20 @@ const parseRSS = (data, i18nextInstance) => {
 const updatePosts = (statePosts, i18nextInstance) => {
   const state = statePosts;
   const delayInSeconds = 5;
-  state.feedsList.forEach((feed) => {
-    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
+  state.feeds.forEach((feed) => {
+    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed)}`)
       .then((response) => {
         const content = response.data.contents;
         const data = parseRSS(content, i18nextInstance);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
-          const diffPostsClone = [];
-          diffPosts.forEach((diffPost) => {
-            const diffPostClone = { ...diffPost, feedId: feed.id };
-            diffPostsClone.push(diffPostClone);
-          });
-          state.postsList.push(diffPostsClone);
+        //  const diffPostsClone = [];
+        //  diffPosts.forEach((diffPost) => {
+        //   const diffPostClone = { ...diffPost, feedId: feed.id };
+        //   diffPostsClone.push(diffPostClone);
+        //  });
+          state.postsList.push(diffPosts);
           state.lastUpdated = Date.now();
         }
       });
@@ -72,7 +72,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     // state.error = i18nextInstance.t('errors.networkError');
     // });
   });
-  setTimeout(updatePosts, delayInSeconds * 1000);
+  setTimeout(updatePosts, delayInSeconds * 1000, state, i18nextInstance);
 };
 
 const app = () => {
@@ -137,7 +137,7 @@ const app = () => {
             watchedState.status = 'loaded';
             watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
           }
-          if (watchedState.feedsList.length > 1) {
+          if (watchedState.feeds.length > 0) {
             updatePosts(watchedState, i18nextInstance);
           }
         })
