@@ -1,6 +1,18 @@
 import onChange from 'on-change';
 
 const watcher = (appState) => {
+  const render = (status) => {
+    const input = document.querySelector('#url-input');
+    const button = document.querySelector('.btn-primary');
+    if (status === 'valid') {
+      input.setAttribute('readonly', true);
+      button.setAttribute('disabled', true);
+    } else {
+      input.removeAttribute('readonly');
+      button.removeAttribute('disabled');
+    }
+  };
+
   const renderErrors = (val, state) => {
     const container = document.querySelector('#container');
     const form = document.querySelector('.form-inline');
@@ -128,6 +140,9 @@ const watcher = (appState) => {
         break;
       case 'readedPostsList':
         renderReadedPosts(appState.readedPostsList);
+        break;
+      case 'status':
+        render(value);
         break;
       default:
         break;

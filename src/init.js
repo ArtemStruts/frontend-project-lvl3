@@ -10,9 +10,6 @@ const parseRSS = (data, i18nextInstance) => {
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
   const parseError = dom.getElementsByTagName('meta');
-  console.log('content', data);
-  console.log(dom.body.innerHTML);
-  console.log(parseError);
   if (parseError.length > 0) {
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
@@ -70,10 +67,10 @@ const updatePosts = (statePosts, i18nextInstance) => {
           state.postsList.push(diffPostsClone);
           state.lastUpdated = Date.now();
         }
-      })
-      .catch(() => {
-        state.error = i18nextInstance.t('errors.networkError');
       });
+    // .catch(() => {
+    // state.error = i18nextInstance.t('errors.networkError');
+    // });
   });
   setTimeout(updatePosts, delayInSeconds * 1000);
 };
@@ -140,7 +137,7 @@ const app = () => {
             watchedState.status = 'loaded';
             watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
           }
-          if (watchedState.feedsList.length > 1) {
+          if (watchedState.feedsList.length > 0) {
             updatePosts(watchedState, i18nextInstance);
           }
         })
