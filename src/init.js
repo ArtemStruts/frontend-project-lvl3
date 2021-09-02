@@ -137,7 +137,7 @@ const app = () => {
             watchedState.status = 'loaded';
             watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
           }
-          if (watchedState.feedsList.length > 0) {
+          if (watchedState.feedsList.length > 1) {
             updatePosts(watchedState, i18nextInstance);
           }
         })
