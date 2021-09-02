@@ -107,6 +107,7 @@ const watcher = (appState) => {
       const buttonPost = document.createElement('button');
       buttonPost.classList.add('btn', 'btn-outline-primary');
       buttonPost.dataset.id = post.id;
+      buttonPost.type = 'button';
       buttonPost.dataset.bsToggle = 'modal';
       buttonPost.dataset.bsTarget = '#modal';
       buttonPost.textContent = 'Просмотр';
