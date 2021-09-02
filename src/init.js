@@ -67,10 +67,10 @@ const updatePosts = (statePosts, i18nextInstance) => {
           state.postsList.push(diffPosts);
           state.lastUpdated = Date.now();
         }
+      })
+      .catch(() => {
+        state.error = i18nextInstance.t('errors.networkError');
       });
-    // .catch(() => {
-    // state.error = i18nextInstance.t('errors.networkError');
-    // });
   });
   setTimeout(updatePosts, delayInSeconds * 1000, state, i18nextInstance);
 };
