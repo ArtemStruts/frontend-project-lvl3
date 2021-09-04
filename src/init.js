@@ -153,10 +153,11 @@ const app = () => {
     });
 
     const modal = document.querySelector('#modal');
-    const modalTitle = document.querySelector('.modal-title');
-    const modalBody = document.querySelector('.modal-body');
+    console.log('modal', modal);
     modal.addEventListener('show.bs.modal', (e) => {
-      modalBody.innerHTML = '';
+      const modalTitle = document.querySelector('.modal-title');
+      const modalBody = document.querySelector('.modal-body');
+      // modalBody.innerHTML = '';
       const button = e.relatedTarget;
       const postId = button.dataset.id;
       const readedPost = watchedState.postsList.flat(Infinity).filter((post) => post.id === postId);
