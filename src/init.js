@@ -159,7 +159,7 @@ const app = () => {
       modalBody.innerHTML = '';
       const button = e.relatedTarget;
       const postId = button.dataset.id;
-      const readedPost = watchedState.postsList.flat().filter((post) => post.id === postId);
+      const readedPost = watchedState.postsList.flat(Infinity).filter((post) => post.id === postId);
       console.log(readedPost);
       watchedState.readedPostsList.push(readedPost);
       modalTitle.textContent = readedPost[0].title;
