@@ -151,13 +151,14 @@ const app = () => {
         });
     });
 
-    const modal = document.querySelector('#modal');
-    console.log('modal', modal);
-    modal.addEventListener('show.bs.modal', (e) => {
+    // const modal = document.querySelector('#modal');
+    const postsContainer = document.querySelector('#posts');
+    // console.log('modal', modal);
+    postsContainer.addEventListener('click', (e) => {
       const modalTitle = document.querySelector('.modal-title');
       const modalBody = document.querySelector('.modal-body');
       // modalBody.innerHTML = '';
-      const button = e.relatedTarget;
+      const button = e.target;
       console.log('button', button);
       const postId = button.dataset.id;
       const readedPost = watchedState.postsList.flat(Infinity).filter((post) => post.id === postId);
