@@ -136,6 +136,7 @@ const app = () => {
             watchedState.lastUpdated = Date.now();
             watchedState.status = 'loaded';
             watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
+            console.log(watchedState);
           }
           if (watchedState.feeds.length > 0) {
             updatePosts(watchedState, i18nextInstance);
@@ -159,6 +160,7 @@ const app = () => {
       const button = e.relatedTarget;
       const postId = button.dataset.id;
       const readedPost = watchedState.postsList.flat().filter((post) => post.id === postId);
+      console.log(readedPost);
       watchedState.readedPostsList.push(readedPost);
       modalTitle.textContent = readedPost[0].title;
       // const p = document.createElement('p');
