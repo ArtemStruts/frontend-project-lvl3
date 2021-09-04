@@ -59,11 +59,6 @@ const updatePosts = (statePosts, i18nextInstance) => {
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
-        //  const diffPostsClone = [];
-        //  diffPosts.forEach((diffPost) => {
-        //   const diffPostClone = { ...diffPost, feedId: feed.id };
-        //   diffPostsClone.push(diffPostClone);
-        //  });
           state.postsList.push(diffPosts);
           state.lastUpdated = Date.now();
         }
@@ -151,13 +146,10 @@ const app = () => {
         });
     });
 
-    // const modal = document.querySelector('#modal');
     const postsContainer = document.querySelector('#posts');
-    // console.log('modal', modal);
     postsContainer.addEventListener('click', (e) => {
       const modalTitle = document.querySelector('.modal-title');
       const modalBody = document.querySelector('.modal-body');
-      // modalBody.innerHTML = '';
       const button = e.target;
       console.log('button', button);
       const postId = button.dataset.id;
@@ -166,9 +158,7 @@ const app = () => {
       watchedState.readedPostsList.push(readedPost);
       console.log(watchedState);
       modalTitle.textContent = readedPost[0].title;
-      // const p = document.createElement('p');
       modalBody.textContent = readedPost[0].description;
-      // modalBody.append(p);
     });
   });
 };
