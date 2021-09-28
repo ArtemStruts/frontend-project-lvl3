@@ -6,11 +6,13 @@ import uniqueId from 'lodash/uniqueId.js';
 import watcher from './watchers.js';
 import resources from './locales/index.js';
 
-const parseRSS = (data, i18nextInstance) => {
+const parseRSS = (data, i18nextInstance, stateParse) => {
+  const state = stateParse;
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'text/html');
   const parseError = dom.getElementsByTagName('meta');
   if (parseError.length > 0) {
+    state.status = 'invalid';
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
   const feedTitleElement = dom.querySelector('title');
@@ -55,7 +57,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed)}`)
       .then((response) => {
         const content = response.data.contents;
-        const data = parseRSS(content, i18nextInstance);
+        const data = parseRSS(content, i18nextInstance, state);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
@@ -64,10 +66,30 @@ const updatePosts = (statePosts, i18nextInstance) => {
         }
       })
       .catch(() => {
+        state.status = 'invalid';
         state.error = i18nextInstance.t('errors.networkError');
       });
   });
   setTimeout(updatePosts, delayInSeconds * 1000, state, i18nextInstance);
+};
+
+const validator = (schema, field, state, i18nextInstance) => {
+  const watchedState = state;
+  schema
+    .validate(field)
+    .then((valid) => {
+      if (watchedState.feeds.includes(valid)) {
+        watchedState.status = 'invalid';
+        watchedState.error = i18nextInstance.t('errors.feedAlreadyExist');
+      } else {
+        watchedState.status = 'valid';
+        watchedState.error = '';
+      }
+    })
+    .catch((e) => {
+      watchedState.status = 'invalid';
+      watchedState.error = e.message;
+    });
 };
 
 const app = () => {
@@ -94,37 +116,21 @@ const app = () => {
         url: i18nextInstance.t('errors.invalidUrl'),
       },
     });
-    const watchedState = watcher(state);
     const schema = yup.string().trim().required().url();
-    const validator = (field) => {
-      schema
-        .validate(field)
-        .then((valid) => {
-          if (watchedState.feeds.includes(valid)) {
-            watchedState.status = 'invalid';
-            watchedState.error = i18nextInstance.t('errors.feedAlreadyExist');
-          } else {
-            watchedState.status = 'valid';
-            watchedState.error = '';
-          }
-        })
-        .catch((e) => {
-          watchedState.status = 'invalid';
-          watchedState.error = e.message;
-        });
-    };
+
+    const watchedState = watcher(state);
 
     const form = document.querySelector('.form-inline');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const value = formData.get('url');
-      validator(value);
+      validator(schema, value, watchedState, i18nextInstance);
       axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
           if (watchedState.status === 'valid') {
             const content = response.data.contents;
-            const data = parseRSS(content, i18nextInstance);
+            const data = parseRSS(content, i18nextInstance, watchedState);
             watchedState.feeds.push(value);
             watchedState.feedsList.push(data.feed);
             watchedState.postsList.push(data.posts);
@@ -151,12 +157,9 @@ const app = () => {
       const modalTitle = document.querySelector('.modal-title');
       const modalBody = document.querySelector('.modal-body');
       const button = e.target;
-      console.log('button', button);
       const postId = button.dataset.id;
       const readedPost = watchedState.postsList.flat(Infinity).filter((post) => post.id === postId);
-      console.log(readedPost);
       watchedState.readedPostsList.push(readedPost);
-      console.log(watchedState);
       modalTitle.textContent = readedPost[0].title;
       modalBody.textContent = readedPost[0].description;
     });
