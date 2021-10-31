@@ -1,38 +1,36 @@
 import onChange from 'on-change';
 
-const render = (status) => {
-  const input = document.querySelector('#url-input');
-  const button = document.querySelector('.btn-primary');
-  if (status === 'valid') {
-    input.setAttribute('readonly', true);
-    button.setAttribute('disabled', true);
-  } else {
-    input.removeAttribute('readonly');
-    button.removeAttribute('disabled');
-  }
+const renderError = (error) => {
+  const feedbackElement = document.querySelector('.feedback');
+  feedbackElement.textContent = error;
 };
 
-const renderErrors = (val, state) => {
+const render = (status) => {
   const form = document.querySelector('.form-inline');
   const input = document.querySelector('#url-input');
   const feedbackElement = document.querySelector('.feedback');
-  if (state.status === 'loaded') {
-    if (document.querySelector('.text-success')) {
-      feedbackElement.textContent = val;
-    } else {
-      input.classList.remove('is-invalid');
+  const button = document.querySelector('.btn-primary');
+  input.classList.remove('is-invalid');
+  input.removeAttribute('readonly');
+  button.removeAttribute('disabled');
+  switch (status) {
+    case 'loading':
+      input.setAttribute('readonly', true);
+      button.setAttribute('disabled', true);
+      break;
+    case 'loaded':
       feedbackElement.classList.remove('text-danger');
       feedbackElement.classList.add('text-success');
-      feedbackElement.textContent = val;
-    } form.reset();
-    form.focus();
-  } else if (document.querySelector('.text-danger')) {
-    feedbackElement.textContent = val;
-  } else {
-    input.classList.add('is-invalid');
-    feedbackElement.classList.remove('text-success');
-    feedbackElement.classList.add('text-danger');
-    feedbackElement.textContent = val;
+      form.reset();
+      form.focus();
+      break;
+    case 'invalid':
+      input.classList.add('is-invalid');
+      feedbackElement.classList.remove('text-success');
+      feedbackElement.classList.add('text-danger');
+      break;
+    default:
+      throw new Error();
   }
 };
 
@@ -114,7 +112,7 @@ const renderReadedPosts = (tempReadedPostsList) => {
 const watcher = (appState) => onChange(appState, (path, value) => {
   switch (path) {
     case 'error':
-      renderErrors(value, appState);
+      renderError(value);
       break;
     case 'feedsList':
       renderFeeds(appState.feedsList);

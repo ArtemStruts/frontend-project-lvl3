@@ -2,53 +2,9 @@ import * as yup from 'yup';
 import { setLocale } from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import uniqueId from 'lodash/uniqueId.js';
 import watcher from './watchers.js';
 import resources from './locales/index.js';
-
-const parseRSS = (data, i18nextInstance, stateParse) => {
-  const state = stateParse;
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(data, 'text/html');
-  const parseError = dom.getElementsByTagName('meta');
-  if (parseError.length > 0) {
-    state.status = 'invalid';
-    throw new Error(i18nextInstance.t('errors.parserError'));
-  }
-  const feedTitleElement = dom.querySelector('title');
-  const feedDescElement = dom.querySelector('description');
-  const feedLinkElement = dom.querySelector('link');
-  const feedTitle = feedTitleElement.textContent.replace('<![CDATA[', '').replace(']]>', '');
-  const feedDesc = feedDescElement.innerHTML.replace('<!--[CDATA[', '').replace(']]-->', '');
-  const feedLink = feedLinkElement.nextSibling.data;
-  const feedId = uniqueId();
-  const postElements = dom.querySelectorAll('item');
-  const postsEl = Array.from(postElements).map((postEl) => {
-    const postTitleElement = postEl.querySelector('title');
-    const postLinkElement = postEl.querySelector('link');
-    const postDescElement = postEl.querySelector('description');
-    const postTitle = postTitleElement.textContent.replace('<![CDATA[', '').replace(']]>', '');
-    const postLink = postLinkElement.nextSibling.data;
-    const postDesc = postDescElement.innerHTML.replace('<!--[CDATA[', '').replace(']]-->', '');
-    const dataElement = postEl.querySelector('pubDate');
-    const postTime = dataElement.textContent;
-    return {
-      title: postTitle,
-      description: postDesc,
-      link: postLink,
-      feedId,
-      id: uniqueId(),
-      pubData: postTime,
-    };
-  });
-  const feed = {
-    title: feedTitle,
-    description: feedDesc,
-    url: feedLink,
-    id: feedId,
-  };
-  return { feed, posts: postsEl };
-};
+import parseRSS from './parser.js';
 
 const updatePosts = (statePosts, i18nextInstance) => {
   const state = statePosts;
@@ -82,7 +38,7 @@ const validator = (schema, field, state, i18nextInstance) => {
         watchedState.status = 'invalid';
         watchedState.error = i18nextInstance.t('errors.feedAlreadyExist');
       } else {
-        watchedState.status = 'valid';
+        watchedState.status = 'loading';
         watchedState.error = '';
       }
     })
@@ -128,7 +84,7 @@ const app = () => {
       validator(schema, value, watchedState, i18nextInstance);
       axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
-          if (watchedState.status === 'valid') {
+          if (watchedState.status === 'loading') {
             const content = response.data.contents;
             const data = parseRSS(content, i18nextInstance, watchedState);
             watchedState.feeds.push(value);
