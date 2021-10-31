@@ -13,7 +13,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed)}`)
       .then((response) => {
         const content = response.data.contents;
-        const data = parseRSS(content, i18nextInstance, state);
+        const data = parseRSS(content, i18nextInstance);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
@@ -74,19 +74,19 @@ const app = () => {
     });
     const schema = yup.string().trim().required().url();
 
-    const watchedState = watcher(state);
+    const watchedState = watcher(state, i18nextInstance);
 
     const form = document.querySelector('.form-inline');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
-      const value = formData.get('url');
+      const value = formData.get('url').trim();
       validator(schema, value, watchedState, i18nextInstance);
       axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
         .then((response) => {
           if (watchedState.status === 'loading') {
             const content = response.data.contents;
-            const data = parseRSS(content, i18nextInstance, watchedState);
+            const data = parseRSS(content, i18nextInstance);
             watchedState.feeds.push(value);
             watchedState.feedsList.push(data.feed);
             watchedState.postsList.push(data.posts);

@@ -3,6 +3,13 @@ export default {
     feedback: {
       RSSLoaded: 'RSS успешно загружен',
     },
+    titles: {
+      feeds: 'Фиды',
+      posts: 'Посты',
+    },
+    buttons: {
+      watch: 'Просмотр',
+    },
     errors: {
       emptyField: 'Не должно быть пустым',
       invalidUrl: 'Ссылка должна быть валидным URL',

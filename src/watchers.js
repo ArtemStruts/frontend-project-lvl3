@@ -34,67 +34,89 @@ const render = (status) => {
   }
 };
 
-const renderFeeds = (feedsList) => {
+const listGroupFeeds = document.createElement('ul');
+listGroupFeeds.classList.add('list-group');
+
+const renderFeed = (feed) => {
+  const listGroupItemFeeds = document.createElement('li');
+  listGroupItemFeeds.classList.add('list-group-item');
+
+  const feedTitle = document.createElement('h3');
+  feedTitle.classList.add('h6', 'm-0');
+  feedTitle.textContent = feed.title;
+
+  const feedDesc = document.createElement('p');
+  feedDesc.classList.add('m-0', 'text-black-50');
+  feedDesc.textContent = feed.description;
+
+  listGroupItemFeeds.append(feedTitle, feedDesc);
+  listGroupFeeds.append(listGroupItemFeeds);
+};
+
+const renderFeeds = (feedsList, i18nextInstance) => {
   const feedsContainer = document.querySelector('#feeds');
   feedsContainer.innerHTML = '';
+
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card');
+
   const cardBodyFeeds = document.createElement('div');
   cardBodyFeeds.classList.add('card-body');
-  const listGroupFeeds = document.createElement('ul');
-  listGroupFeeds.classList.add('list-group');
+
   const cardTitleFeeds = document.createElement('h2');
   cardTitleFeeds.classList.add('card-title', 'h4');
-  cardTitleFeeds.textContent = 'Фиды';
+  cardTitleFeeds.textContent = i18nextInstance.t('titles.feeds');
+
+  feedsList.forEach((feed) => renderFeed(feed));
+
   cardBodyFeeds.append(cardTitleFeeds);
-  feedsList.forEach((feed) => {
-    const listGroupItemFeeds = document.createElement('li');
-    listGroupItemFeeds.classList.add('list-group-item');
-    const feedTitle = document.createElement('h3');
-    feedTitle.classList.add('h6', 'm-0');
-    feedTitle.textContent = feed.title;
-    const feedDesc = document.createElement('p');
-    feedDesc.classList.add('m-0', 'text-black-50');
-    feedDesc.textContent = feed.description;
-    listGroupItemFeeds.append(feedTitle, feedDesc);
-    listGroupFeeds.append(listGroupItemFeeds);
-  });
   cardFeeds.append(cardBodyFeeds, listGroupFeeds);
   feedsContainer.append(cardFeeds);
 };
 
-const renderPosts = (tempPostsList) => {
+const listGroupPosts = document.createElement('ul');
+listGroupPosts.classList.add('list-group');
+
+const renderPost = (post, i18nextInstance) => {
+  const listGroupItemPosts = document.createElement('li');
+  listGroupItemPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
+
+  const itemLinkPost = document.createElement('a');
+  itemLinkPost.classList.add('fw-bold');
+  itemLinkPost.dataset.id = post.id;
+  itemLinkPost.setAttribute('href', post.link);
+  itemLinkPost.textContent = post.title;
+
+  const buttonPost = document.createElement('button');
+  buttonPost.classList.add('btn', 'btn-outline-primary');
+  buttonPost.dataset.id = post.id;
+  buttonPost.type = 'button';
+  buttonPost.dataset.bsToggle = 'modal';
+  buttonPost.dataset.bsTarget = '#modal';
+  buttonPost.textContent = i18nextInstance.t('buttons.watch');
+
+  listGroupItemPosts.append(itemLinkPost, buttonPost);
+  listGroupPosts.append(listGroupItemPosts);
+};
+
+const renderPosts = (tempPostsList, i18nextInstance) => {
   const postsList = tempPostsList.flat();
   const postsContainer = document.querySelector('#posts');
   postsContainer.innerHTML = '';
+
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card');
+
   const cardBodyPosts = document.createElement('div');
   cardBodyPosts.classList.add('card-body');
-  const listGroupPosts = document.createElement('ul');
-  listGroupPosts.classList.add('list-group');
+
   const cardTitlePosts = document.createElement('h2');
   cardTitlePosts.classList.add('card-title', 'h4');
-  cardTitlePosts.textContent = 'Посты';
+  cardTitlePosts.textContent = i18nextInstance.t('titles.posts');
+
+  postsList.forEach((post) => renderPost(post, i18nextInstance));
+
   cardBodyPosts.append(cardTitlePosts);
-  postsList.forEach((post) => {
-    const listGroupItemPosts = document.createElement('li');
-    listGroupItemPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-    const itemLinkPost = document.createElement('a');
-    itemLinkPost.classList.add('fw-bold');
-    itemLinkPost.dataset.id = post.id;
-    itemLinkPost.setAttribute('href', post.link);
-    itemLinkPost.textContent = post.title;
-    const buttonPost = document.createElement('button');
-    buttonPost.classList.add('btn', 'btn-outline-primary');
-    buttonPost.dataset.id = post.id;
-    buttonPost.type = 'button';
-    buttonPost.dataset.bsToggle = 'modal';
-    buttonPost.dataset.bsTarget = '#modal';
-    buttonPost.textContent = 'Просмотр';
-    listGroupItemPosts.append(itemLinkPost, buttonPost);
-    listGroupPosts.append(listGroupItemPosts);
-  });
   cardPosts.append(cardBodyPosts, listGroupPosts);
   postsContainer.append(cardPosts);
 };
@@ -109,16 +131,16 @@ const renderReadedPosts = (tempReadedPostsList) => {
   });
 };
 
-const watcher = (appState) => onChange(appState, (path, value) => {
+const watcher = (appState, i18nextInstance) => onChange(appState, (path, value) => {
   switch (path) {
     case 'error':
       renderError(value);
       break;
     case 'feedsList':
-      renderFeeds(appState.feedsList);
+      renderFeeds(appState.feedsList, i18nextInstance);
       break;
     case 'postsList':
-      renderPosts(appState.postsList);
+      renderPosts(appState.postsList, i18nextInstance);
       break;
     case 'readedPostsList':
       renderReadedPosts(appState.readedPostsList);
