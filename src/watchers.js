@@ -1,33 +1,37 @@
 import onChange from 'on-change';
 
+const elements = {
+  form: document.querySelector('.form-inline'),
+  input: document.querySelector('#url-input'),
+  feedbackElement: document.querySelector('.feedback'),
+  button: document.querySelector('.btn-primary'),
+  feedsContainer: document.querySelector('#feeds'),
+  postsContainer: document.querySelector('#posts'),
+};
+
 const renderError = (error) => {
-  const feedbackElement = document.querySelector('.feedback');
-  feedbackElement.textContent = error;
+  elements.feedbackElement.textContent = error;
 };
 
 const render = (status) => {
-  const form = document.querySelector('.form-inline');
-  const input = document.querySelector('#url-input');
-  const feedbackElement = document.querySelector('.feedback');
-  const button = document.querySelector('.btn-primary');
-  input.classList.remove('is-invalid');
-  input.removeAttribute('readonly');
-  button.removeAttribute('disabled');
+  elements.input.classList.remove('is-invalid');
+  elements.input.removeAttribute('readonly');
+  elements.button.removeAttribute('disabled');
   switch (status) {
     case 'loading':
-      input.setAttribute('readonly', true);
-      button.setAttribute('disabled', true);
+      elements.input.setAttribute('readonly', true);
+      elements.button.setAttribute('disabled', true);
       break;
     case 'loaded':
-      feedbackElement.classList.remove('text-danger');
-      feedbackElement.classList.add('text-success');
-      form.reset();
-      form.focus();
+      elements.feedbackElement.classList.remove('text-danger');
+      elements.feedbackElement.classList.add('text-success');
+      elements.form.reset();
+      elements.form.focus();
       break;
     case 'invalid':
-      input.classList.add('is-invalid');
-      feedbackElement.classList.remove('text-success');
-      feedbackElement.classList.add('text-danger');
+      elements.input.classList.add('is-invalid');
+      elements.feedbackElement.classList.remove('text-success');
+      elements.feedbackElement.classList.add('text-danger');
       break;
     default:
       throw new Error();
@@ -54,8 +58,7 @@ const renderFeed = (feed) => {
 };
 
 const renderFeeds = (feedsList, i18nextInstance) => {
-  const feedsContainer = document.querySelector('#feeds');
-  feedsContainer.innerHTML = '';
+  elements.feedsContainer.innerHTML = '';
 
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card');
@@ -71,7 +74,7 @@ const renderFeeds = (feedsList, i18nextInstance) => {
 
   cardBodyFeeds.append(cardTitleFeeds);
   cardFeeds.append(cardBodyFeeds, listGroupFeeds);
-  feedsContainer.append(cardFeeds);
+  elements.feedsContainer.append(cardFeeds);
 };
 
 const listGroupPosts = document.createElement('ul');
@@ -101,8 +104,7 @@ const renderPost = (post, i18nextInstance) => {
 
 const renderPosts = (tempPostsList, i18nextInstance) => {
   const postsList = tempPostsList.flat();
-  const postsContainer = document.querySelector('#posts');
-  postsContainer.innerHTML = '';
+  elements.postsContainer.innerHTML = '';
 
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card');
@@ -118,14 +120,13 @@ const renderPosts = (tempPostsList, i18nextInstance) => {
 
   cardBodyPosts.append(cardTitlePosts);
   cardPosts.append(cardBodyPosts, listGroupPosts);
-  postsContainer.append(cardPosts);
+  elements.postsContainer.append(cardPosts);
 };
 
 const renderReadedPosts = (tempReadedPostsList) => {
   const readedPostsList = tempReadedPostsList.flat();
-  const postsContainer = document.querySelector('#posts');
   readedPostsList.forEach((readedPost) => {
-    const readedPostElement = postsContainer.querySelector(`[data-id='${readedPost.id}']`);
+    const readedPostElement = elements.postsContainer.querySelector(`[data-id='${readedPost.id}']`);
     readedPostElement.classList.remove('fw-bold');
     readedPostElement.classList.add('fw-normal');
   });
