@@ -6,7 +6,6 @@ const renderError = (error) => {
 };
 
 const render = (status) => {
-  const form = document.querySelector('.form-inline');
   const input = document.querySelector('#url-input');
   const feedbackElement = document.querySelector('.feedback');
   const button = document.querySelector('.btn-primary');
@@ -21,8 +20,7 @@ const render = (status) => {
     case 'loaded':
       feedbackElement.classList.remove('text-danger');
       feedbackElement.classList.add('text-success');
-      form.reset();
-      form.focus();
+      input.focus();
       break;
     case 'invalid':
       input.classList.add('is-invalid');

@@ -93,6 +93,8 @@ const app = () => {
             watchedState.lastUpdated = Date.now();
             watchedState.status = 'loaded';
             watchedState.error = i18nextInstance.t('feedback.RSSLoaded');
+            form.reset();
+            form.focus();
           }
           if (watchedState.feeds.length > 0) {
             updatePosts(watchedState, i18nextInstance);
