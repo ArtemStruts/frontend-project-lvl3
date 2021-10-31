@@ -13,7 +13,7 @@ const updatePosts = (statePosts, i18nextInstance) => {
     axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feed)}`)
       .then((response) => {
         const content = response.data.contents;
-        const data = parseRSS(content, i18nextInstance);
+        const data = parseRSS(content, i18nextInstance, state);
         const newPosts = data.posts;
         const diffPosts = newPosts.filter((post) => Date.parse(post.pubData) > state.lastUpdated);
         if (diffPosts.length > 0) {
@@ -86,7 +86,7 @@ const app = () => {
         .then((response) => {
           if (watchedState.status === 'loading') {
             const content = response.data.contents;
-            const data = parseRSS(content, i18nextInstance);
+            const data = parseRSS(content, i18nextInstance, watchedState);
             watchedState.feeds.push(value);
             watchedState.feedsList.push(data.feed);
             watchedState.postsList.push(data.posts);

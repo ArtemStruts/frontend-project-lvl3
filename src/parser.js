@@ -11,11 +11,13 @@ const getContent = (document) => {
   };
 };
 
-const parseRSS = (data, i18nextInstance) => {
+const parseRSS = (data, i18nextInstance, stateParse) => {
+  const state = stateParse;
   const parser = new DOMParser();
   const dom = parser.parseFromString(data, 'application/xml');
   const parseError = dom.querySelector('parsererror');
   if (parseError) {
+    state.status = 'invalid';
     throw new Error(i18nextInstance.t('errors.parserError'));
   }
   const { title, description, link } = getContent(dom);
