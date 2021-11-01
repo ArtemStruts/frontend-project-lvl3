@@ -66,8 +66,8 @@ const renderFeeds = (feedsList, i18nextInstance) => {
   listGroupFeeds.classList.add('list-group');
 
   feedsList.forEach((feed) => {
-    const listGroupItemFeeds = renderFeed(feed);
-    listGroupFeeds.append(listGroupItemFeeds);
+    const view = renderFeed(feed);
+    listGroupFeeds.append(view);
   });
 
   cardBodyFeeds.append(cardTitleFeeds);
@@ -116,8 +116,8 @@ const renderPosts = (tempPostsList, i18nextInstance) => {
   listGroupPosts.classList.add('list-group');
 
   postsList.forEach((post) => {
-    const listGroupItemPosts = renderPost(post, i18nextInstance);
-    listGroupPosts.append(listGroupItemPosts);
+    const view = renderPost(post, i18nextInstance);
+    listGroupPosts.append(view);
   });
 
   cardBodyPosts.append(cardTitlePosts);
