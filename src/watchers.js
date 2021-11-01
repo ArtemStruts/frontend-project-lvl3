@@ -32,9 +32,6 @@ const render = (status) => {
   }
 };
 
-const listGroupFeeds = document.createElement('ul');
-listGroupFeeds.classList.add('list-group');
-
 const renderFeed = (feed) => {
   const listGroupItemFeeds = document.createElement('li');
   listGroupItemFeeds.classList.add('list-group-item');
@@ -48,7 +45,7 @@ const renderFeed = (feed) => {
   feedDesc.textContent = feed.description;
 
   listGroupItemFeeds.append(feedTitle, feedDesc);
-  listGroupFeeds.append(listGroupItemFeeds);
+  return listGroupItemFeeds;
 };
 
 const renderFeeds = (feedsList, i18nextInstance) => {
@@ -65,15 +62,18 @@ const renderFeeds = (feedsList, i18nextInstance) => {
   cardTitleFeeds.classList.add('card-title', 'h4');
   cardTitleFeeds.textContent = i18nextInstance.t('titles.feeds');
 
-  feedsList.forEach((feed) => renderFeed(feed));
+  const listGroupFeeds = document.createElement('ul');
+  listGroupFeeds.classList.add('list-group');
+
+  feedsList.forEach((feed) => {
+    const listGroupItemFeeds = renderFeed(feed);
+    listGroupFeeds.append(listGroupItemFeeds);
+  });
 
   cardBodyFeeds.append(cardTitleFeeds);
   cardFeeds.append(cardBodyFeeds, listGroupFeeds);
   feedsContainer.append(cardFeeds);
 };
-
-const listGroupPosts = document.createElement('ul');
-listGroupPosts.classList.add('list-group');
 
 const renderPost = (post, i18nextInstance) => {
   const listGroupItemPosts = document.createElement('li');
@@ -94,7 +94,7 @@ const renderPost = (post, i18nextInstance) => {
   buttonPost.textContent = i18nextInstance.t('buttons.watch');
 
   listGroupItemPosts.append(itemLinkPost, buttonPost);
-  listGroupPosts.append(listGroupItemPosts);
+  return listGroupItemPosts;
 };
 
 const renderPosts = (tempPostsList, i18nextInstance) => {
@@ -112,7 +112,13 @@ const renderPosts = (tempPostsList, i18nextInstance) => {
   cardTitlePosts.classList.add('card-title', 'h4');
   cardTitlePosts.textContent = i18nextInstance.t('titles.posts');
 
-  postsList.forEach((post) => renderPost(post, i18nextInstance));
+  const listGroupPosts = document.createElement('ul');
+  listGroupPosts.classList.add('list-group');
+
+  postsList.forEach((post) => {
+    const listGroupItemPosts = renderPost(post, i18nextInstance);
+    listGroupPosts.append(listGroupItemPosts);
+  });
 
   cardBodyPosts.append(cardTitlePosts);
   cardPosts.append(cardBodyPosts, listGroupPosts);
